@@ -16,3 +16,4 @@ jobs:
         id: label-pr
         with:
           who-to-greet: 'Mona the Octocat'
+          token: ${{ secrets.GITHUB_TOKEN }}
