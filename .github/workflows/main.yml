@@ -1,6 +1,6 @@
 on:
-  pull_request:
-    types: [opened, reopened, ready_for_review, review_requested, review_request_removed]
+  check_suite:
+    types: [completed]
 
 jobs:
   main_job:
@@ -15,5 +15,4 @@ jobs:
         uses: ./ # Uses an action in the root directory
         id: label-pr
         with:
-          who-to-greet: 'Mona the Octocat'
           token: ${{ secrets.GITHUB_TOKEN }}

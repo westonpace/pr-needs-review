@@ -83,6 +83,8 @@ async function checkMergeState(repo, prNumber) {
 
 async function run() {
     try {
+        console.log(`The event payload: ${payload}`);
+
         repo = github.context.repo;
         prNumber = github.context.payload.number;
 
@@ -98,8 +100,6 @@ async function run() {
 
         }
         await findReadyForReviewComments(github.context.repo, prNumber);
-
-        console.log(`The event payload: ${payload}`);
     } catch (error) {
         core.setFailed(error.message);
     }
