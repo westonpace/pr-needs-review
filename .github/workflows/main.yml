@@ -1,0 +1,18 @@
+on:
+  pull_request:
+    types: [opened, ready_for_review, review_requested, review_request_removed]
+
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-latest
+    name: Label PR with review status
+    steps:
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Label PR if appropriate
+        uses: ./ # Uses an action in the root directory
+        id: label-pr
+        with:
+          who-to-greet: 'Mona the Octocat'

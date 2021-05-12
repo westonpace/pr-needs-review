@@ -1,0 +1,24 @@
+{
+  "name": "pr-needs-review",
+  "version": "1.0.0",
+  "description": "An action that labels PRs which are ready for review",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/westonpace/pr-needs-review.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/westonpace/pr-needs-review/issues"
+  },
+  "homepage": "https://github.com/westonpace/pr-needs-review#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.7",
+    "@actions/github": "^4.0.0"
+  }
+}
