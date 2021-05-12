@@ -12,9 +12,10 @@ async function findReadyForReviewComments(repo, prNumber) {
         repo: repo.repo,
         issue_number: prNumber
     });
-    for (const comment of comments) {
-        console.log(JSON.stringify(comment, null, 2));
-    }
+    console.log(JSON.stringify(comments, null, 2));
+    // for (const comment of comments) {
+    //     console.log(JSON.stringify(comment, null, 2));
+    // }
 }
 
 async function run() {
