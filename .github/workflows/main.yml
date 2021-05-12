@@ -1,0 +1,23 @@
+on:
+  issue_comment:
+  pull_request:
+    types:
+      - ready_for_review
+      - opened
+      - converted_to_draft
+  pull_request_review:
+
+jobs:
+  main_job:
+    runs-on: ubuntu-latest
+    name: Label PR with review status
+    steps:
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Label PR if appropriate
+        uses: ./ # Uses an action in the root directory
+        id: label-pr
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,18 @@
+name: 'Run Tests on Dummy Repo'
+description: 'Tests the library against a dummy repo'
+inputs:
+  dummyRepoOwner:
+    description: 'The owner part of a dummy repo to test against'
+    required: true
+  dummyRepoName:
+    description: 'The name part of a dummy repo to test against'
+    required: true
+  dummyRepoToken:
+    description: 'A token used to access the Github API.  Should have permissions to dummy repo'
+    required: true
+  dummyRepoAltToken:
+    description: 'A second token used to access the Github API.  Should also have permissions to the dummy repo'
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'

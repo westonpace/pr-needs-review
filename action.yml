@@ -1,0 +1,19 @@
+name: 'PR Ready for Review'
+description: >
+  Ensures that PRs either have an awaiting-review label or an awaiting-changes label.
+branding:
+  icon: user-check
+  color: green
+inputs:
+  token:
+    description: 'A token used to access the Github API.  Usually {{ secrets.GITHUB_TOKEN }}'
+    required: true
+  verbose:
+    description: >
+      If "true" then output verbose details about what is being checked.
+      This is mainly useful for debugging the action itself.
+    required: false
+    default: ''
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
