@@ -32,7 +32,7 @@ async function lookInCommentsForPass(repo, prNumber) {
 async function run() {
     try {
         prNumber = github.context.payload.number;
-        const passing = await lookInCommentsForPass(repo, prNumber);
+        const passing = await lookInCommentsForPass(github.context.repo, prNumber);
         if (passing) {
             console.log('Passed');
         } else {
