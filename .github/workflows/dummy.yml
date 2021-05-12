@@ -1,0 +1,15 @@
+on:
+  [pull_request]
+
+jobs:
+  dummy_test_job:
+    runs-on: ubuntu-latest
+    name: Dummy status check for testing
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Label PR if appropriate
+        uses: ./test-check
+        id: dummy-check
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

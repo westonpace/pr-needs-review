@@ -1,0 +1,9 @@
+name: 'Dummy check'
+description: 'Dummy check used for testing the action'
+inputs:
+  token:
+    description: 'A token used to access the Github API.  Usually {{ secrets.GITHUB_TOKEN }}'
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'

@@ -3,7 +3,7 @@ on:
     types: [opened, reopened, ready_for_review, review_requested, review_request_removed]
 
 jobs:
-  hello_world_job:
+  main_job:
     runs-on: ubuntu-latest
     name: Label PR with review status
     steps:

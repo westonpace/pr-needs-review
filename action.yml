@@ -1,13 +1,13 @@
 name: 'PR Ready for Review'
 description: 'Labels PRs that are ready review'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  token:
+    description: 'A token used to access the Github API.  Usually {{ secrets.GITHUB_TOKEN }}'
     required: true
-    default: 'World'
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  verbose:
+    description: 'If "true" then output verbose details about what is being checked'
+    required: false
+    default: ''
 runs:
   using: 'node12'
   main: 'index.js'
