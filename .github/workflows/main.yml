@@ -1,6 +1,6 @@
 on:
   pull_request:
-    types: [opened, ready_for_review, review_requested, review_request_removed]
+    types: [opened, reopened, ready_for_review, review_requested, review_request_removed]
 
 jobs:
   hello_world_job:
