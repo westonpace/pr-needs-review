@@ -1,6 +1,7 @@
 on:
   check_suite:
     types: [completed]
+  issue_comment:
 
 jobs:
   main_job:
