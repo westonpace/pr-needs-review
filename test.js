@@ -1,15 +1,22 @@
+const { SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG } = require('constants');
 const process = require('process');
-const fs = require('fs');
-const contextPayload = JSON.stringify(require('./test-context.json'));
 
 if (!('INPUT_TOKEN' in process.env)) {
-    console.log('In order to test this action you must set INPUT_TOKEN to a valid Github token');
+    console.log('In order to run this test you must set INPUT_TOKEN to a valid Github token');
     process.exit(-1);
 }
-process.env.INPUT_VERBOSE = 'true';
-process.env.GITHUB_REPOSITORY = 'westonpace/pr-needs-review';
 
-fs.writeFileSync('/tmp/foo.json', contextPayload, { encoding: 'utf-8' });
-process.env.GITHUB_EVENT_PATH = '/tmp/foo.json';
 
-require('./index.js');
+async function run() {
+    const lib = require('./lib.js');
+    lib.configure({ owner: 'apache', repo: 'arrow' }, process.env['INPUT_TOKEN'], true);
+    const openPrs = await lib.getOpenPrs();
+    for (let openPr of openPrs) {
+        console.log(`Checking Open PR ${openPr.number}`);
+        await lib.updatePrStatus(openPr.number);
+    }
+}
+
+run().catch(err => {
+    console.log(err);
+});
