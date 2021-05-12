@@ -1,6 +1,10 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 
+const myToken = core.getInput('token');
+const octokit = github.getOctokit(myToken);
+const payload = JSON.stringify(github.context.payload, undefined, 2)
+
 async function findReadyForReviewComments(repo, prNumber) {
 
     const comments = await octokit.request('GET /repos/{owner}/{repo}/issues/{issue_number}/comments', {
@@ -15,10 +19,6 @@ async function findReadyForReviewComments(repo, prNumber) {
 
 async function run() {
     try {
-        const myToken = core.getInput('token');
-        const octokit = github.getOctokit(myToken);
-        const payload = JSON.stringify(github.context.payload, undefined, 2)
-      
         prNumber = github.context.payload.number;
       
         await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
