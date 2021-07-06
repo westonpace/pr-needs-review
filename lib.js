@@ -256,5 +256,7 @@ module.exports = {
         octokit = github.getOctokit(token);
     },
     getOpenPrs,
-    updatePrStatus
+    updatePrStatus,
+    isDraft,
+    ensureLabel
 };
