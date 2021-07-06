@@ -83,6 +83,7 @@ function isDraft(pull_request) {
 }
 
 function addLabel(prNumber, label) {
+    console.log(`addLabel:: prNumber=${prNumber} label=${label}`);
     const labelRsp = await octokit.rest.issues.addLabels({
         owner: repo.owner,
         repo: repo.repo,
@@ -94,8 +95,10 @@ function addLabel(prNumber, label) {
 
 function ensureLabel(issue, label) {
     if (hasLabel(issue, label)) {
+        console.log('ensureLabel::hasLabel: true');
         return;
     }
+    console.log('ensureLabel::adding label');
     addLabel(issue, label);
 }
 
