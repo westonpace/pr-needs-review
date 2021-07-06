@@ -1,12 +1,11 @@
 on:
-  check_suite:
-    types: [completed]
   issue_comment:
   pull_request:
     types:
       - ready_for_review
       - opened
       - converted_to_draft
+  pull_request_review:
 
 jobs:
   main_job:
