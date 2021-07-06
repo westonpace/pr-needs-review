@@ -78,6 +78,27 @@ function hasLabel(issue, label) {
     return false;
 }
 
+function isDraft(pull_request) {
+    return pull_request.draft;
+}
+
+function addLabel(prNumber, label) {
+    const labelRsp = await octokit.rest.issues.addLabels({
+        owner: repo.owner,
+        repo: repo.repo,
+        issue_number: prNumber,
+        labels: [label]
+    });
+    console.log('Added label rsp: ' + JSON.stringify(labelRsp));
+}
+
+function ensureLabel(issue, label) {
+    if (hasLabel(issue, label)) {
+        return;
+    }
+    addLabel(issue, label);
+}
+
 function getCurrentIssueLabelStatus(issue) {
     readyForReview = hasLabel(issue, 'ready-for-review');
     unstable = hasLabel(issue, 'unstable');
