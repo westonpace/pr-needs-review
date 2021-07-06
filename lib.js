@@ -140,6 +140,10 @@ function isApprove(review) {
     return review.state.toLowerCase() === 'approved';
 }
 
+function isNeedsChanges(review) {
+    return review.state.toLowerCase() == 'changes_requested';
+}
+
 function isIndicative(review) {
     return review.state.toLowerCase() !== 'commented';
 }
@@ -151,8 +155,11 @@ async function getApprovalStatusByAuthor(prNumber) {
         pull_number: prNumber
     })).data;
     const approvedByAuthor = {};
+    console.log(`getApprovalStatus ${reviews.length} reviews`);
     for (const review of reviews) {
+        console.log(`  Reviewer ${review.user.login}`);
         if (isIndicative(review)) {
+            console.log(`    Indicative and ${isApprove(review)}`);
             approvedByAuthor[review.user.login] = isApprove(review);
         }
     }
@@ -185,5 +192,6 @@ module.exports = {
     isDraft,
     ensureLabel,
     hasLabel,
-    getApprovalStatusByAuthor
+    getApprovalStatusByAuthor,
+    isNeedsChanges
 };

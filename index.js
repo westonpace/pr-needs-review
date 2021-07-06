@@ -60,7 +60,7 @@ async function handleConvertedToDraft() {
 
 async function handlePrReview() {
     const approvalStatusByAuthor = lib.getApprovalStatusByAuthor(payload.pull_request.number);
-    const needsChanges = false;
+    const needsChanges = lib.isNeedsChanges(payload.review);
     for (const author of Object.keys(approvalStatusByAuthor)) {
         if (approvalStatusByAuthor[author]) {
             console.log(`Approved by ${author}`);
