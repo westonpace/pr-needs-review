@@ -47,6 +47,10 @@ async function run() {
             if (payload.action === 'opened') {
                 console.log('Is opened action');
                 handlePrOpened();
+            } else if (payload.action === 'ready_for_review') {
+                console.log('Is ready for review');
+            } else if (payload.action === 'converted_to_draft') {
+                console.log('Is converted to draft');
             }
         }
 

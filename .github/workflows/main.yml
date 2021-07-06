@@ -6,6 +6,7 @@ on:
     types:
       - ready_for_review
       - opened
+      - converted_to_draft
 
 jobs:
   main_job:
