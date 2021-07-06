@@ -106,7 +106,7 @@ async function removeLabel(prNumber, label) {
         owner: repo.owner,
         repo: repo.repo,
         issue_number: prNumber,
-        label
+        name: label
     }));
 }
 
