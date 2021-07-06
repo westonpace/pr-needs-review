@@ -25,9 +25,9 @@ async function run() {
         console.log(`The event payload: ${payload_str}`);
 
         let err;
-        if ('comment' in payload) {
-            err = await handleIssueComment();
-        }
+        // if ('comment' in payload) {
+        //     err = await handleIssueComment();
+        // }
 
         if (err) {
             core.setFailed(err);

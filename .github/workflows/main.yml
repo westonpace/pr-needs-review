@@ -2,6 +2,10 @@ on:
   check_suite:
     types: [completed]
   issue_comment:
+  pull_request:
+    types:
+      - ready_for_review
+      - opened
 
 jobs:
   main_job:
