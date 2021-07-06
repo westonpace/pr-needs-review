@@ -16,6 +16,12 @@ lib.configure(repo, myToken, verbose);
 
 const readyForReviewLabel = 'awaiting-review';
 const needsChangesLabel = 'awaiting-changes';
+const needsChangesComment = `
+Your PR has received a review that is requesting changes.  Please make the changes requested.
+ Once you have done this please leave a comment on this pull request containing the phrase
+ \`I have made the requested changes; please review again\`.  This will relabel the pull
+ request to let reviewers know the changes have been completed.
+`.trim().replace('\n', '');
 
 // async function handleIssueComment() {
 //     if (isReadyForReviewComment(payload.comment) && isPrIssue(payload.issue)) {
@@ -52,6 +58,36 @@ async function handleConvertedToDraft() {
     await lib.ensureLabel(payload.pull_request, readyForReviewLabel, false);
 }
 
+async function handlePrReview() {
+    const approvalStatusByAuthor = lib.getApprovalStatusByAuthor(payload.pull_request.number);
+    const needsChanges = false;
+    for (const author of Object.keys(approvalStatusByAuthor)) {
+        if (approvalStatusByAuthor[author]) {
+            console.log(`Approved by ${author}`);
+        } else if (approvalStatusByAuthor[author] === false) {
+            console.log(`Needs changes from ${author}`);
+            needsChanges = true;
+        } else {
+            console.log(`Pending review from ${author}`);
+        }
+    }
+    if (needsChanges) {
+        console.log(`Needs changes`);
+        if (lib.hasLabel(payload.pull_request, readyForReviewLabel)) {
+            console.log(`Did not previously need changes`);
+            await lib.addComment(payload.pull_request.number, needsChangesComment);
+        } else {
+            console.log(`Already needed changes`);
+        }
+        await lib.ensureLabel(payload.pull_request, needsChangesLabel);
+        await lib.ensureLabel(payload.pull_request, readyForReviewLabel, false);
+    } else {
+        console.log(`Does not need changes`);
+        await lib.ensureLabel(payload.pull_request, readyForReviewLabel);
+        await lib.ensureLabel(payload.pull_request, needsChangesLabel, false);
+    }
+}
+
 async function run() {
     try {
         payload_str = JSON.stringify(github.context.payload, undefined, 2);
@@ -59,14 +95,21 @@ async function run() {
 
         console.log('Checking action');
         if ('pull_request' in payload) {
-            console.log('Is pull_request action');
-            if (payload.action === 'opened') {
-                console.log('Is opened action');
-                handlePrOpened();
-            } else if (payload.action === 'ready_for_review') {
-                handleReadyForReview();
-            } else if (payload.action === 'converted_to_draft') {
-                handleConvertedToDraft();
+            if ('review' in payload) {
+                // PR Review
+                console.log('Is PR review');
+                handlePrReview();
+            } else {
+                //PR action
+                console.log('Is pull_request action');
+                if (payload.action === 'opened') {
+                    console.log('Is opened action');
+                    handlePrOpened();
+                } else if (payload.action === 'ready_for_review') {
+                    handleReadyForReview();
+                } else if (payload.action === 'converted_to_draft') {
+                    handleConvertedToDraft();
+                }
             }
         }
 

@@ -22,6 +22,7 @@ function expectSuccess(rsp) {
         console.error(JSON.stringify(rsp, null, 2));
         throw Error('A request that was expected to succeed failed.  See logs for details');
     }
+    return rsp;
 }
 
 async function getComments(prNumber) {
@@ -135,42 +136,6 @@ function getCurrentIssueLabelStatus(issue) {
     };
 }
 
-async function checkMergeState(prNumber) {
-    const mergeState = await getMergeState(prNumber);
-    if (mergeState === 'clean') {
-        return undefined;
-    }
-    if (mergeState === 'unstable') {
-        return {
-            canOverride: true,
-            reason: 'The PR has failing checks'
-        };
-    }
-    if (mergeState === 'draft') {
-        return {
-            canOverride: false,
-            reason: 'The PR is still in a draft state'
-        };
-    }
-    return {
-        canOverride: false,
-        reason: `The PR is not mergeable for some reason (${mergeState})`
-    };
-}
-
-function getRequestedReviewers(pr) {
-    return pr.requested_reviewers.map(user => user.login);
-}
-
-async function getReviews(prNumber) {
-    const commentsRsp = await octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {
-        owner: repo.owner,
-        repo: repo.repo,
-        pull_number: prNumber
-    });
-    return commentsRsp.data;
-}
-
 function isApprove(review) {
     return review.state.toLowerCase() === 'approved';
 }
@@ -179,99 +144,36 @@ function isIndicative(review) {
     return review.state.toLowerCase() !== 'commented';
 }
 
-async function getReviewersToLatestState(prNumber) {
-    reviews = await getReviews(prNumber);
-    reviewersToLatestState = {}
-    for (let review of reviews) {
-        if (isIndicative(review)) {
-            user = review.user.login;
-            reviewersToLatestState[user] = isApprove(review);
-        }
-    }
-    return reviewersToLatestState;
-}
-
-async function determineIfChangesRequested(pr) {
-    requestedReviewers = getRequestedReviewers(pr);
-    if (verbose) {
-        console.log(`Ignoring PRs from requested reviewers: ${requestedReviewers}`);
-    }
-    reviewersToLatestState = await getReviewersToLatestState(pr.number);
-    let changesRequested = false;
-    for (let reviewer of Object.keys(reviewersToLatestState)) {
-        if (requestedReviewers.indexOf(reviewer) >= 0) {
-            if (!reviewersToLatestState[reviewer]) {
-                if (verbose) {
-                    console.log(`The reviewer ${reviewer} is not ignored and has requested changes`);
-                }
-                changesRequested = true;
-            } else if (verbose) {
-                console.log(`The reviewer ${reviewer} approves`);
-            }
-        }
-    }
-    return changesRequested;
-}
-
-async function determineIfUnstable(pr) {
-    if (pr.mergeable_state.toLowerCase() === 'unstable') {
-        return true;
-    } else if (pr.mergeable) {
-        return false;
-    } else {
-        return undefined;
-    }
-}
-
-async function getCommits(prNumber) {
-    const commitsRsp = await octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/commits', {
+function getApprovalStatusByAuthor(prNumber) {
+    const reviews = expectSuccess(await octokit.rest.pulls.listReviews({
         owner: repo.owner,
         repo: repo.repo,
         pull_number: prNumber
-    });
-    return commitsRsp.data;
-}
-
-async function getLastCommitTimestamp(prNumber) {
-    const commits = await getCommits(prNumber);
-    const lastCommit = commits[commits.length - 1];
-    return Date.parse(lastCommit.commit.committer.date);
-}
-
-async function determineIfWhitelisted(prNumber) {
-    lastReadyForReview = await getLastReadyForReviewTimestamp(prNumber);
-    if (lastReadyForReview) {
-        lastCommitTimestamp = await getLastCommitTimestamp(prNumber);
-        return lastReadyForReview > lastCommitTimestamp;
+    })).data;
+    const approvedByAuthor = {};
+    for (const review of reviews) {
+        if (isIndicative(review)) {
+            approvedByAuthor[review.user.login] = isApprove(review);
+        }
     }
-    return false;
-}
-
-async function updatePrStatus(prNumber) {
-    pr = await getStabilizedPr(prNumber);
-    if (!pr) {
-        return 'Could not determine PR status (pr.mergeable_state remained unknown)';
-    }
-    currentStatus = getCurrentIssueLabelStatus(pr);
-
-    changesRequested = await determineIfChangesRequested(pr);
-    unstable = await determineIfUnstable(pr);
-    whitelisted = await determineIfWhitelisted(pr.number);
-
-    console.log(`The PR ${prNumber}: changesRequested=${changesRequested} unstable=${unstable} whitelisted=${whitelisted}`);
-}
-
-function isPrIssue(issue) {
-    return 'pull_request' in issue;
-}
-
-async function getOpenPrs() {
-    const prsRsp = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
+    const pendingReviews = expectSuccess(await octokit.rest.pulls.listRequestedReviewers({
         owner: repo.owner,
         repo: repo.repo,
-        state: 'open'
-    });
-    return prsRsp.data;
+        pull_number: prNumber
+    })).data;
+    for (const user of pendingReviews.users) {
+        approvedByAuthor[user.login] = null;
+    }
+    return approvedByAuthor;
+}
+
+async function addComment(prNumber, body) {
+    await expectSuccess(await octokit.rest.issues.createComment({
+        owner: repo.owner,
+        repo: repo.repo,
+        issue_number: prNumber,
+        body
+    }));
 }
 
 module.exports = {
@@ -284,5 +186,6 @@ module.exports = {
     updatePrStatus,
     isDraft,
     ensureLabel,
-    hasLabel
+    hasLabel,
+    getApprovalStatusByAuthor
 };
