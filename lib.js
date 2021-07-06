@@ -144,7 +144,7 @@ function isIndicative(review) {
     return review.state.toLowerCase() !== 'commented';
 }
 
-function getApprovalStatusByAuthor(prNumber) {
+async function getApprovalStatusByAuthor(prNumber) {
     const reviews = expectSuccess(await octokit.rest.pulls.listReviews({
         owner: repo.owner,
         repo: repo.repo,
@@ -182,8 +182,6 @@ module.exports = {
         verbose = verbose_;
         octokit = github.getOctokit(token);
     },
-    getOpenPrs,
-    updatePrStatus,
     isDraft,
     ensureLabel,
     hasLabel,

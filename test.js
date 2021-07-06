@@ -12,12 +12,8 @@ const readyForReviewLabel = 'awaiting-review';
 async function run() {
     const lib = require('./lib.js');
     lib.configure({ owner: 'westonpace', repo: 'pr-needs-review' }, process.env['INPUT_TOKEN'], true);
-    if (!lib.isDraft(payload.pull_request)) {
-        console.log('Is not draft');
-        await lib.ensureLabel(payload.pull_request, readyForReviewLabel);
-    } else {
-        console.log('Is draft');
-    }
+    const status = await lib.getApprovalStatusByAuthor(14);
+    console.log(JSON.stringify(status));
 }
 
 run().catch(err => {
