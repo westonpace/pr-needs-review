@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-
+BLAH
 const lib = require('./lib.js');
 
 const MAX_POLL_ATTEMPTS = 5
