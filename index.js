@@ -12,6 +12,8 @@ const octokit = github.getOctokit(myToken);
 const payload = github.context.payload;
 const repo = github.context.repo;
 
+lib.configure(repo, myToken, verbose);
+
 const readyForReviewLabel = 'awaiting-review';
 
 // async function handleIssueComment() {
