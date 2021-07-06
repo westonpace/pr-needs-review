@@ -6,14 +6,17 @@ if (!('INPUT_TOKEN' in process.env)) {
     process.exit(-1);
 }
 
+const payload = require('./test-context.json');
+const readyForReviewLabel = 'awaiting-review';
 
 async function run() {
     const lib = require('./lib.js');
-    lib.configure({ owner: 'apache', repo: 'arrow' }, process.env['INPUT_TOKEN'], true);
-    const openPrs = await lib.getOpenPrs();
-    for (let openPr of openPrs) {
-        console.log(`Checking Open PR ${openPr.number}`);
-        await lib.updatePrStatus(openPr.number);
+    lib.configure({ owner: 'westonpace', repo: 'pr-needs-review' }, process.env['INPUT_TOKEN'], true);
+    if (!lib.isDraft(payload.pull_request)) {
+        console.log('Is not draft');
+        await lib.ensureLabel(payload.pull_request, readyForReviewLabel);
+    } else {
+        console.log('Is draft');
     }
 }
 

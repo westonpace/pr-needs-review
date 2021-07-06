@@ -1,6 +1,8 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 
+const lib = require('./lib.js');
+
 const MAX_POLL_ATTEMPTS = 5
 const POLL_BACKOFF_MS = 30
 
@@ -12,21 +14,21 @@ const repo = github.context.repo;
 
 const readyForReviewLabel = 'awaiting-review';
 
-async function handleIssueComment() {
-    if (isReadyForReviewComment(payload.comment) && isPrIssue(payload.issue)) {
-        let currentStatus = getCurrentIssueLabelStatus(payload.issue);
-        if (currentStatus.unstable || !currentStatus.readyForReview) {
-            return updatePrStatus(payload.issue.number);
-        }
-    }
-}
+// async function handleIssueComment() {
+//     if (isReadyForReviewComment(payload.comment) && isPrIssue(payload.issue)) {
+//         let currentStatus = getCurrentIssueLabelStatus(payload.issue);
+//         if (currentStatus.unstable || !currentStatus.readyForReview) {
+//             return updatePrStatus(payload.issue.number);
+//         }
+//     }
+// }
 
 async function handlePrOpened() {
     // When a PR is opened:
     // * If the PR is not in draft then mark it ready for review
-    if (!isDraft(payload.pull_request)) {
+    if (!lib.isDraft(payload.pull_request)) {
         console.log('Is not draft');
-        ensureLabel(payload.pull_request.number, readyForReviewLabel);
+        await lib.ensureLabel(payload.pull_request.number, readyForReviewLabel);
     } else {
         console.log('Is draft');
     }

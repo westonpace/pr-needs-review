@@ -16,6 +16,14 @@ function isReadyForReviewComment(comment) {
     return comment.body.toLowerCase().includes('ready for review');
 }
 
+function expectSuccess(rsp) {
+    if (rsp.status != 200) {
+        console.error('Expected request to succeed but got error response');
+        console.error(JSON.stringify(rsp, null, 2));
+        throw Error('A request that was expected to succeed failed.  See logs for details');
+    }
+}
+
 async function getComments(prNumber) {
     const commentsRsp = await octokit.request('GET /repos/{owner}/{repo}/issues/{issue_number}/comments', {
         owner: repo.owner,
@@ -82,24 +90,23 @@ function isDraft(pull_request) {
     return pull_request.draft;
 }
 
-function addLabel(prNumber, label) {
+async function addLabel(prNumber, label) {
     console.log(`addLabel:: prNumber=${prNumber} label=${label}`);
-    const labelRsp = await octokit.rest.issues.addLabels({
+    expectSuccess(await octokit.rest.issues.addLabels({
         owner: repo.owner,
         repo: repo.repo,
         issue_number: prNumber,
         labels: [label]
-    });
-    console.log('Added label rsp: ' + JSON.stringify(labelRsp));
+    }));
 }
 
-function ensureLabel(issue, label) {
+async function ensureLabel(issue, label) {
     if (hasLabel(issue, label)) {
         console.log('ensureLabel::hasLabel: true');
         return;
     }
     console.log('ensureLabel::adding label');
-    addLabel(issue, label);
+    await addLabel(issue.number, label);
 }
 
 function getCurrentIssueLabelStatus(issue) {
