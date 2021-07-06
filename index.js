@@ -34,8 +34,11 @@ async function run() {
         payload_str = JSON.stringify(github.context.payload, undefined, 2);
         console.log(`The event payload: ${payload_str}`);
 
+        console.log('Checking action');
         if ('pull_request' in payload) {
+            console.log('Is pull_request action');
             if (payload.action === 'opened') {
+                console.log('Is opened action');
                 handlePrOpened();
             }
         }
