@@ -12,7 +12,7 @@ const readyForReviewLabel = 'awaiting-review';
 async function run() {
     const lib = require('./lib.js');
     lib.configure({ owner: 'westonpace', repo: 'pr-needs-review' }, process.env['INPUT_TOKEN'], true);
-    const status = await lib.getApprovalStatusByAuthor(14);
+    const status = await lib.getApprovalStatusByAuthor(16);
     console.log(JSON.stringify(status));
 }
 
