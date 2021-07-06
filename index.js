@@ -1,9 +1,8 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-BLAH
 const lib = require('./lib.js');
 
-const MAX_POLL_ATTEMPTS = 5
+const MAX_POLL_ATTEMPTS = 6
 const POLL_BACKOFF_MS = 30
 
 const verbose = 'true' === core.getInput('verbose').toLowerCase();
