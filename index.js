@@ -28,7 +28,7 @@ async function handlePrOpened() {
     // * If the PR is not in draft then mark it ready for review
     if (!lib.isDraft(payload.pull_request)) {
         console.log('Is not draft');
-        await lib.ensureLabel(payload.pull_request.number, readyForReviewLabel);
+        await lib.ensureLabel(payload.pull_request, readyForReviewLabel);
     } else {
         console.log('Is draft');
     }
