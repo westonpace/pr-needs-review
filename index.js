@@ -15,6 +15,7 @@ const repo = github.context.repo;
 lib.configure(repo, myToken, verbose);
 
 const readyForReviewLabel = 'awaiting-review';
+const needsChangesLabel = 'awaiting-changes';
 
 // async function handleIssueComment() {
 //     if (isReadyForReviewComment(payload.comment) && isPrIssue(payload.issue)) {
@@ -36,6 +37,21 @@ async function handlePrOpened() {
     }
 }
 
+async function handleReadyForReview() {
+    // Converting to review won't clear awaiting-changes but it can add awaiting-review
+    if (!lib.hasLabel(payload.pull_request, needsChangesLabel)) {
+        console.log('Does not need changes')
+        await lib.ensureLabel(payload.pull_request, readyForReviewLabel);
+    } else {
+        console.log('Needs changes');
+    }
+}
+
+async function handleConvertedToDraft() {
+    console.log('Ensuring label removed')
+    await lib.ensureLabel(payload.pull_request, readyForReviewLabel, false);
+}
+
 async function run() {
     try {
         payload_str = JSON.stringify(github.context.payload, undefined, 2);
@@ -48,9 +64,9 @@ async function run() {
                 console.log('Is opened action');
                 handlePrOpened();
             } else if (payload.action === 'ready_for_review') {
-                console.log('Is ready for review');
+                handleReadyForReview();
             } else if (payload.action === 'converted_to_draft') {
-                console.log('Is converted to draft');
+                handleConvertedToDraft();
             }
         }
 

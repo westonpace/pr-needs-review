@@ -100,13 +100,28 @@ async function addLabel(prNumber, label) {
     }));
 }
 
-async function ensureLabel(issue, label) {
-    if (hasLabel(issue, label)) {
+async function removeLabel(prNumber, label) {
+    console.log(`removeLabel:: prNumber=${prNumber} label=${label}`);
+    expectSuccess(await octokit.rest.issues.removeLabel({
+        owner: repo.owner,
+        repo: repo.repo,
+        issue_number: prNumber,
+        label
+    }));
+}
+
+async function ensureLabel(issue, label, expected = true) {
+    if (hasLabel(issue, label) == expected) {
         console.log('ensureLabel::hasLabel: true');
         return;
     }
-    console.log('ensureLabel::adding label');
-    await addLabel(issue.number, label);
+    if (expected) {
+        console.log('ensureLabel::adding label');
+        await addLabel(issue.number, label);
+    } else {
+        console.log('ensureLabel::removing label');
+        await removeLabel(issue.number, label);
+    }
 }
 
 function getCurrentIssueLabelStatus(issue) {
@@ -268,5 +283,6 @@ module.exports = {
     getOpenPrs,
     updatePrStatus,
     isDraft,
-    ensureLabel
+    ensureLabel,
+    hasLabel
 };

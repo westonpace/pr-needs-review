@@ -2,5 +2,7 @@
 * When a PR is created that is draft it should not have the awaiting-review label
 * When a PR is converted from draft to ready for review it should get one of the labels
   * Test each case
-* When a PR is converted from ready for review to draft both labels should be removed.
+* When a PR is converted from ready for review to draft then awaiting-review should be removed
   * But not other labels
+* When a PR is converted from draft to ready for review then awaiting-review should be added
+  * Only if awaiting-changes is not present
