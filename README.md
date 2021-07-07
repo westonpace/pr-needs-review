@@ -45,7 +45,7 @@ jobs:
     name: Update review status labels
     steps:
       - name: Update review status labels
-        uses: westonpace/pr-needs-review@v1
+        uses: westonpace/pr-needs-review@v0.2.0
         id: label-pr
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
